@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/*
+ * AI 하는 모든 행동을 관장
+ */
 public class AICommander
 {
     enum EAICommand
@@ -16,9 +20,11 @@ public class AICommander
 
     Vector2 FindSuitableMoveDestination()
     {
-        //인간에게 전달할 목표좌표 설정하는 곳, 현재는 임의로 5,5로 해놨는데 나중에 랜덤하게 바꿀 예정
-        //
-        return new Vector2(5, 5);
+        
+
+
+        //일단 랜덤하게 만들었음
+        return GameMap.GetEmptyCellRandomly();
     }
 
     public void RequestCommand(HumanController human)

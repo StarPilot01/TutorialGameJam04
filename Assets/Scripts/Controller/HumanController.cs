@@ -9,9 +9,7 @@ public class HumanController : CreatureController
     
     
 
-    public ECreatureType CreatureType { get; protected set; }
 
-    //public event Action OnClicked;
 
     [SerializeField]
     int _rewardLiverEnergy = 5;

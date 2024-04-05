@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using static Define;
 
@@ -14,7 +15,7 @@ public class GameMap : MonoBehaviour
     static float _cellSize = 0.75f;
 
     //0부터 시작
-    BaseController[,] _map;
+    static BaseController[,] _map;
 
     // Start is called before the first frame update
     void Start()
@@ -23,8 +24,10 @@ public class GameMap : MonoBehaviour
 
 
         Managers.ObjectManager.Spawn<HumanController>(CellToWorld(0, 0), "Human");
-        Managers.ObjectManager.Spawn<HumanController>(CellToWorld(9, 7), "Human");
+        Managers.ObjectManager.Spawn<HumanController>(CellToWorld(9, 4), "Human");
         Managers.ObjectManager.Spawn<HumanController>(CellToWorld(0, 6), "Human");
+        Managers.ObjectManager.Spawn<HumanController>(CellToWorld(20, 0), "Human");
+        Managers.ObjectManager.Spawn<HumanController>(CellToWorld(20, 6), "Human");
 
 
         //Managers.ObjectManager.Spawn<HumanController>(CellToWorld(1, 1), "Human");
@@ -36,9 +39,7 @@ public class GameMap : MonoBehaviour
         //Debug.Log(WorldToCell(0, 0));
         //Debug.Log(WorldToCell(0.5f, -0.5f));
         //Debug.Log(WorldToCell(1.1f, -1.1f));
-        //
-        //Debug.Log(GetAdjustedCellCenterWorld(1.1f, -1.1f));
-        //Debug.Log(GetAdjustedCellCenterWorld(0.5f, -0.5f));
+        
 
     }
 
@@ -48,7 +49,22 @@ public class GameMap : MonoBehaviour
         
     }
 
+    public static Vector2 GetEmptyCellRandomly()
+    {
+        while (true)
+        {
+            int x = UnityEngine.Random.Range(0, (int)_cellCount.x);
+            int y = UnityEngine.Random.Range(0, (int)_cellCount.y);
 
+            if (_map[y, x] == null)
+            {
+                return new Vector2(x, y);
+            }
+
+        }
+
+
+    }
     public static Vector2 WorldToCell(float x, float y)
     {
 

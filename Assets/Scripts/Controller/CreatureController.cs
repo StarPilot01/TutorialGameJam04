@@ -5,6 +5,7 @@ using static Define;
 
 public class CreatureController : BaseController
 {
+    public ECreatureType CreatureType { get; protected set; }
 
     protected enum EPathfindingState
     { 
@@ -14,6 +15,8 @@ public class CreatureController : BaseController
     
     }
 
+
+    protected Vector2 _prevCellPos;
 
     protected Rigidbody2D _rigidBody;
     protected bool _bMove = false;
@@ -238,7 +241,10 @@ public class CreatureController : BaseController
 
     protected void RefreshCellPos()
     {
+        //_prevCellPos = _cellPos;
         _cellPos = GameMap.WorldToCell(_rigidBody.position.x, _rigidBody.position.y);
+        
+        //현재 Pos랑 진행방향 Pos에 우루사 못 놓게 하기
     }
 
     
@@ -250,13 +256,12 @@ public class CreatureController : BaseController
         Vector2 wayPointPos = GameMap.CellToWorld(_wayPointCellPos);
         Vector2 diff = myPos - wayPointPos;
 
-        //Debug.Log(diff);
-
-        const float EPSILON = 0.02f;
+        const float EPSILON = 0.035f;
 
         if (Mathf.Abs(diff.magnitude) <= EPSILON)
         {
             _rigidBody.MovePosition(GameMap.CellToWorld(_wayPointCellPos));
+
 
             RefreshCellPos();
 
