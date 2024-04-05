@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static Define;
+using DG.Tweening;
 
 public class HumanController : CreatureController
 {
@@ -64,20 +65,32 @@ public class HumanController : CreatureController
 
     private void OnMouseDown()
     {
+        BeingAbsorbed();
         Managers.GameManager.OnHumanClicked(this);
+
     }
 
 
     public void BeingAbsorbed()
     {
+        Sequence sequence = DOTween.Sequence().SetAutoKill(false)
+            .Append(transform.DOMoveY(transform.position.y + 1.5f, 1))
+            .Join(transform.GetComponent<SpriteRenderer>().DOFade(0, 0.75f))
+            .OnComplete(() =>
+            {
+                Debug.Log("Complete");
+                Managers.ObjectManager.Despawn<HumanController>(this);
+            }
+            ); 
+
         //흡수당할 때 목적지에 도착으로 변경하고 정지
+        
+
         _absorbed = true;
         PathFindingState = EPathfindingState.ArrivedDestination;
 
         //추가 애니메이션 실행
+        //_animator.Play("Absorbed");
     }
-
-
-
-
 }
+ 

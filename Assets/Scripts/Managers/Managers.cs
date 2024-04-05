@@ -11,6 +11,7 @@ public class Managers : MonoBehaviour
 
     #region Contents
     GameManager _gameManager = new GameManager();
+
     ObjectManager _objectManager = new ObjectManager();
     
     ScoreManager _scoreManager = new ScoreManager();

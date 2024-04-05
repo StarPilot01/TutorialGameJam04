@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using static Define;
+using DG.Tweening;
+
 public class GameManager
 {
 
@@ -24,14 +26,12 @@ public class GameManager
 
             
         }
-    
-    
     }
 
     public event Action OnGameOver;
     public event Action OnEatHuman;
 
-    const float palanquinYDiff = 0.5f;
+    const float palanquinYDiff = 1.1f;
     
     public GameManager()
     {
@@ -64,21 +64,26 @@ public class GameManager
     void EatHuman(HumanController human)
     {
         //꽃가마 생성
+        Palanquin palanquin = InstantiatePalanquin(human);
 
-        InstantiatePalanquin(human);
+        Sequence sequence = DOTween.Sequence().SetAutoKill(false)
+            .Append(palanquin.transform.DOShakeRotation(1f, 5f))
+            .Append(palanquin.GetComponent<SpriteRenderer>().DOFade(0, 1f))
+            .OnComplete(() => Managers.ObjectManager.Despawn<Palanquin>(palanquin));
+
 
         //사운드 
 
         //간 에너지 갱신 , 구미호 얼굴 표정 변화
         Managers.ScoreManager.LiverEnergy += human.RewardLiverEnergy;
-
-
     }
 
-    void InstantiatePalanquin(HumanController human)
+    Palanquin InstantiatePalanquin(HumanController human)
     {
         Vector3 palanquinPos = new Vector3(human.transform.position.x, human.transform.position.y + palanquinYDiff, 0);
         Palanquin palanquin = Managers.ObjectManager.Spawn<Palanquin>(palanquinPos, "Palanquin");
         palanquin.SetTargetHuman(human);
+
+        return palanquin;
     }
 }

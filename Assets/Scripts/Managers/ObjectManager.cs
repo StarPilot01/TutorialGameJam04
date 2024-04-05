@@ -122,12 +122,7 @@ public class ObjectManager
         //System.Type type = typeof(T);
         
 
-
-
-        Destory(obj.GameObject());
-
-       
-       
+        Destory(obj.GameObject());   
     }
 
     #endregion
