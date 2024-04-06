@@ -15,14 +15,17 @@ public class Soju : ItemController
         base.Init();
 
         ItemType = EItemType.Soju;
-
-
-
         return true;
     }
 
     public override void OnEat()
     {
         Debug.Log("Eat Soju");
+        Managers.ObjectManager.Despawn<Soju>(this);
+    }
+
+    public override EItemType ReturnType()
+    {
+        return EItemType.Soju;
     }
 }

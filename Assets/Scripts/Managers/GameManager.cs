@@ -22,6 +22,9 @@ public class GameManager
         set
         {
             _clickMode = value;
+            
+            if(KumihoUI != null)
+                KumihoUI.Invoke((int)_clickMode);
 
             //UI °»½Å   
         }
@@ -62,6 +65,7 @@ public class GameManager
 
 
     public UnityAction<string> KumihoAction;
+    public UnityAction<int> KumihoUI;
 
     void EatHuman(HumanController human)
     {

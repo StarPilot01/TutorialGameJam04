@@ -10,7 +10,7 @@ public class Kumiho : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Managers.GameManager.KumihoAction += SetAnim;   
+        Managers.GameManager.KumihoAction += SetAnim;
     }
 
     // Update is called once per frame

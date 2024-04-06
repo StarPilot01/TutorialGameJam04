@@ -69,6 +69,22 @@ public class HumanController : CreatureController
         Managers.GameManager.OnHumanClicked(this);
     }
 
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag.Equals("Eatable"))
+        {
+            IEatable eatable = collision.GetComponent<IEatable>();
+            eatable.OnEat();
+
+            switch (eatable.ReturnType())
+            { 
+                //Type에 따른 유저행동
+
+            }
+        }
+    }
+
+
 
     public void BeingAbsorbed()
     {

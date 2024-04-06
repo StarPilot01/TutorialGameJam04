@@ -15,14 +15,17 @@ public class Ursa : ItemController
         base.Init();
 
         ItemType = EItemType.Ursa;
-
-
-
         return true;
     }
 
     public override void OnEat()
     {
         Debug.Log("Eat Ursa");
+        Managers.ObjectManager.Despawn<Ursa>(this);
+    }
+
+    public override EItemType ReturnType()
+    {
+        return EItemType.Ursa;
     }
 }

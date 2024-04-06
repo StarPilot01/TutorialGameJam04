@@ -24,8 +24,9 @@ public class Define
     public enum EItemType
     { 
         Soju,
-        Ursa
-    
+        Ursa,
+        
+        None = 99,
     }
 
 

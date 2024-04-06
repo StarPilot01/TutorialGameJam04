@@ -16,6 +16,7 @@ public class PlayUIManager : MonoBehaviour
     {
         Managers.ScoreManager.setTime += SetTimeText;
         Managers.ScoreManager.setLinerValue += SetlinerValue;
+        Managers.GameManager.KumihoUI += SetMode;
     }
 
     void Update()
