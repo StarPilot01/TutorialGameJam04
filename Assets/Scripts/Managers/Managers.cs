@@ -52,19 +52,12 @@ public class Managers : MonoBehaviour
             DontDestroyOnLoad(managersObject);
             s_instance = managersObject.GetComponent<Managers>();
 
-
-         
-
             //UIManager.Init();
             
-
             //ScoreManager.Test();
 
 
-        }
-
-
-        
+        }   
     }
 
     public static void Release()

@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using static Define;
 using DG.Tweening;
+using UnityEngine.Events;
 
 public class GameManager
 {
@@ -22,9 +23,7 @@ public class GameManager
         {
             _clickMode = value;
 
-            //UI 갱신
-
-            
+            //UI 갱신   
         }
     }
 
@@ -61,8 +60,13 @@ public class GameManager
         }
     }
 
+
+    public UnityAction<string> KumihoAction;
+
     void EatHuman(HumanController human)
     {
+        human.BeingAbsorbed();
+
         //꽃가마 생성
         Palanquin palanquin = InstantiatePalanquin(human);
 
@@ -75,7 +79,12 @@ public class GameManager
         //사운드 
 
         //간 에너지 갱신 , 구미호 얼굴 표정 변화
+
         Managers.ScoreManager.LiverEnergy += human.RewardLiverEnergy;
+        Debug.Log(Managers.ScoreManager.LiverEnergy);
+
+        //Succeed, Idle, Good, Fail, Bad
+        KumihoAction.Invoke("Succeed");
     }
 
     Palanquin InstantiatePalanquin(HumanController human)

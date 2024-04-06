@@ -24,6 +24,5 @@ public class Ursa : ItemController
     public override void OnEat()
     {
         Debug.Log("Eat Ursa");
-
     }
 }

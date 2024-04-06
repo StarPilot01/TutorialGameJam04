@@ -13,7 +13,7 @@ public class HumanController : CreatureController
 
 
     [SerializeField]
-    int _rewardLiverEnergy = 5;
+    int _rewardLiverEnergy = 1;
 
     public int RewardLiverEnergy { get { return _rewardLiverEnergy; } }
 
@@ -60,14 +60,13 @@ public class HumanController : CreatureController
     public override void OnSpawn()
     {
         base.OnSpawn();
+        transform.localScale = Vector3.one;
         Managers.AICommander.RequestCommand(this);
     }
 
     private void OnMouseDown()
     {
-        BeingAbsorbed();
         Managers.GameManager.OnHumanClicked(this);
-
     }
 
 
@@ -75,7 +74,7 @@ public class HumanController : CreatureController
     {
         Sequence sequence = DOTween.Sequence().SetAutoKill(false)
             .Append(transform.DOMoveY(transform.position.y + 1.5f, 1))
-            .Join(transform.GetComponent<SpriteRenderer>().DOFade(0, 0.75f))
+            .Join(_renderer.DOFade(0, 0.75f))
             .OnComplete(() =>
             {
                 Debug.Log("Complete");
@@ -90,7 +89,10 @@ public class HumanController : CreatureController
         PathFindingState = EPathfindingState.ArrivedDestination;
 
         //추가 애니메이션 실행
-        //_animator.Play("Absorbed");
+
+        transform.localScale = new Vector3(2.7f, 2.7f, 2.7f);
+        _animator.Play("Fall");
+        
     }
 }
  

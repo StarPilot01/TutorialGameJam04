@@ -101,7 +101,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveSpeed: 300
-  _rewardLiverEnergy: 5
+  _rewardLiverEnergy: 3
 --- !u!50 &-4081727680760803536
 Rigidbody2D:
   serializedVersion: 4
