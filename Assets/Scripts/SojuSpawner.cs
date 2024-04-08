@@ -2,29 +2,48 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemSpawner : MonoBehaviour
+public class SojuSpawner
 {
-    [SerializeField] int spawnDelay;
+    
+    float _spawnCycleSec;
+    Coroutine _coSojuSpanwCycle;
 
-    // Start is called before the first frame update
-    void Start()
+    public void SetSpawnCycle(float cycle)
     {
-        StartCoroutine(SojuSpawner());
+        _spawnCycleSec = cycle;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void StartSpawn()
     {
-        if(Input.GetMouseButtonDown(0))
+        _coSojuSpanwCycle = CoroutineManager.StartCoroutine(StartSojuSpawnCycle(_spawnCycleSec));
+    }
+
+    IEnumerator StartSojuSpawnCycle(float cycle)
+    {
+        while (true)
         {
-            if (Managers.GameManager.ClickMode == Define.EClickMode.Eat)
-                return;
+            yield return new WaitForSeconds(cycle);
 
-            Vector2 vec = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-            UrusaSpawn(vec);
+            Vector2 pos = GameMap.GetEmptyCellRandomly();
+            pos = GameMap.CellToWorld(pos);
+            Managers.ObjectManager.Spawn<Soju>(pos, "Soju");
         }
     }
+
+
+
+    //void Update()
+    //{
+    //    if(Input.GetMouseButtonDown(0))
+    //    {
+    //        if (Managers.GameManager.ClickMode == Define.EClickMode.Eat)
+    //            return;
+    //
+    //        Vector2 vec = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    //
+    //        UrusaSpawn(vec);
+    //    }
+    //}
 
     /// <summary>
     /// //CellToWorld 써서 하고 싶었는데 cellSize가 0.75라서 특정 구간되면
@@ -58,26 +77,5 @@ public class ItemSpawner : MonoBehaviour
     }
     
 
-    /// <summary>
-    /// 시간마다 일단 랜덤 Cell 받아와서 스폰되게 했습니다.
-    /// </summary>
-    /// <param name="vec"></param>
-    /// <returns></returns>
-    Soju InstantiateSoju(Vector2 vec)
-    {
-        Debug.Log(vec);
-        Soju soju = Managers.ObjectManager.Spawn<Soju>(vec, "Soju");
-        return soju;
-    }
-    IEnumerator SojuSpawner()
-    {
-        while(true)
-        {
-            yield return new WaitForSeconds(spawnDelay);
-
-            Vector2 pos = GameMap.GetEmptyCellRandomly();
-            pos = GameMap.CellToWorld(pos);
-            InstantiateSoju(pos);
-        }
-    }
+  
 }

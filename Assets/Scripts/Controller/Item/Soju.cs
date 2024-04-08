@@ -24,8 +24,8 @@ public class Soju : ItemController
         Managers.ObjectManager.Despawn<Soju>(this);
     }
 
-    public override EItemType ReturnType()
+    public void OnMouseDown()
     {
-        return EItemType.Soju;
+        Managers.GameManager.OnItemClicked(this);
     }
 }

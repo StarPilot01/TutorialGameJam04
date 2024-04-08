@@ -48,10 +48,18 @@ public class Define
         None
             
     }
-
+    public enum Scene
+    {
+        
+        
+        LobbyScene,
+        GameScene
+    }
     public enum EClickMode
     {
         Eat,
-        Place
+        Place,
+        Pickup,
+        Kill
     }
 }

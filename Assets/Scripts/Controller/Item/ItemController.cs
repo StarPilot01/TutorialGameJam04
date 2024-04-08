@@ -29,8 +29,5 @@ public class ItemController : BaseController , IEatable
         
     }
 
-    public virtual EItemType ReturnType()
-    {
-        return EItemType.None;
-    }
+    
 }

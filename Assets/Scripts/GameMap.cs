@@ -35,7 +35,7 @@ public class GameMap : MonoBehaviour
         //Managers.ObjectManager.Spawn<HumanController>(CellToWorld(1, 1), "Human");
         //Managers.ObjectManager.Spawn<HumanController>(CellToWorld(5, 5), "Human");
 
-        //Debug.Log(WorldToCell(0, 0));
+        Debug.Log(CellToWorld(0, 0));
         //Debug.Log(WorldToCell(0.5f, -0.5f));
         //Debug.Log(WorldToCell(1.1f, -1.1f));
     }

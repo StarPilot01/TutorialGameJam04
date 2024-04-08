@@ -23,15 +23,41 @@ public class GameManager
         {
             _clickMode = value;
             
-            if(KumihoUI != null)
-                KumihoUI.Invoke((int)_clickMode);
+            
+            OnClickModeChanged?.Invoke(_clickMode);
 
-            //UI 갱신   
+            
         }
     }
 
+    float _elapsedTime;
+    public float ElapsedTime { get { _elapsedTime += Time.deltaTime;  return _elapsedTime; } }
+
+    Kumiho _kumiho;
+    public Kumiho kumiho 
+    { 
+        get 
+        {
+            if(_kumiho == null)
+            {
+                GameScene gameScene = Managers.SceneManager.CurrentScene as GameScene;
+
+                if (gameScene == null)
+                {
+                    Debug.Assert(false);
+                }
+                _kumiho = gameScene.Kumiho;
+            }
+            return _kumiho;
+        } 
+    }
+    #region Action
     public event Action OnGameOver;
     public event Action OnEatHuman;
+
+    public UnityAction<EClickMode> OnClickModeChanged;
+    
+    #endregion
 
     const float palanquinYDiff = 1.1f;
     
@@ -63,13 +89,31 @@ public class GameManager
         }
     }
 
+    public void OnItemClicked(ItemController item)
+    {
 
-    public UnityAction<string> KumihoAction;
-    public UnityAction<int> KumihoUI;
+        if(ClickMode != EClickMode.Pickup)
+        {
+            return;
+        }
+
+
+        switch(item.ItemType)
+        {
+            case EItemType.Soju:
+                Managers.ObjectManager.Despawn<ItemController>(item);
+                break;
+            case EItemType.Ursa:
+                Managers.ObjectManager.Despawn<ItemController>(item);
+                break;
+        }
+    }
+    
 
     void EatHuman(HumanController human)
     {
-        human.BeingAbsorbed();
+        
+        kumiho.EatHuman(human);
 
         //꽃가마 생성
         Palanquin palanquin = InstantiatePalanquin(human);
@@ -82,13 +126,8 @@ public class GameManager
 
         //사운드 
 
-        //간 에너지 갱신 , 구미호 얼굴 표정 변화
 
-        Managers.ScoreManager.LiverEnergy += human.RewardLiverEnergy;
-        Debug.Log(Managers.ScoreManager.LiverEnergy);
-
-        //Succeed, Idle, Good, Fail, Bad
-        KumihoAction.Invoke("Succeed");
+        
     }
 
     Palanquin InstantiatePalanquin(HumanController human)

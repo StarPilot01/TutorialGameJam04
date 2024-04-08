@@ -6,5 +6,4 @@ using static Define;
 public interface IEatable
 {
     public void OnEat();
-    public EItemType ReturnType();
 }

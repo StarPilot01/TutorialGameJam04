@@ -24,8 +24,10 @@ public class Ursa : ItemController
         Managers.ObjectManager.Despawn<Ursa>(this);
     }
 
-    public override EItemType ReturnType()
+    public void OnMouseDown()
     {
-        return EItemType.Ursa;
+        Managers.GameManager.OnItemClicked(this);
+
     }
+
 }

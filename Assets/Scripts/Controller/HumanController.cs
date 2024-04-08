@@ -66,7 +66,11 @@ public class HumanController : CreatureController
 
     private void OnMouseDown()
     {
-        Managers.GameManager.OnHumanClicked(this);
+        if (!_absorbed)
+        {
+            Managers.GameManager.OnHumanClicked(this);
+
+        }
     }
 
     public void OnTriggerEnter2D(Collider2D collision)
@@ -76,11 +80,7 @@ public class HumanController : CreatureController
             IEatable eatable = collision.GetComponent<IEatable>();
             eatable.OnEat();
 
-            switch (eatable.ReturnType())
-            { 
-                //Type에 따른 유저행동
-
-            }
+            
         }
     }
 
@@ -89,11 +89,11 @@ public class HumanController : CreatureController
     public void BeingAbsorbed()
     {
         Sequence sequence = DOTween.Sequence().SetAutoKill(false)
-            .Append(transform.DOMoveY(transform.position.y + 1.5f, 1))
+            .Append(transform.GetChild(0).transform.DOMoveY(transform.GetChild(0).position.y + 1.5f, 1))
             .Join(_renderer.DOFade(0, 0.75f))
             .OnComplete(() =>
             {
-                Debug.Log("Complete");
+                //Debug.Log("Complete");
                 Managers.ObjectManager.Despawn<HumanController>(this);
             }
             ); 
@@ -106,7 +106,7 @@ public class HumanController : CreatureController
 
         //추가 애니메이션 실행
 
-        transform.localScale = new Vector3(2.7f, 2.7f, 2.7f);
+        transform.GetChild(0).transform.localScale = new Vector3(2.7f, 2.7f, 2.7f);
         _animator.Play("Fall");
         
     }

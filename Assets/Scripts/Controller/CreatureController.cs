@@ -26,6 +26,7 @@ public class CreatureController : BaseController
 
     [SerializeField]
     protected float _moveSpeed;
+    protected float _adjustmentY = -0.375f;
 
     protected float _animMoveSpeed;
     protected float MoveSpeed
@@ -137,8 +138,8 @@ public class CreatureController : BaseController
         ObjectType = EObjectType.Creature;
 
         _rigidBody = GetComponent<Rigidbody2D>();
-        _animator = GetComponent<Animator>();
-        _renderer = GetComponent<SpriteRenderer>();
+        _animator = transform.GetChild(0).GetComponent<Animator>();
+        _renderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
 
         MoveSpeed = _moveSpeed;
 

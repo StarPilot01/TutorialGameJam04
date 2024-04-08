@@ -28,9 +28,11 @@ public class Managers : MonoBehaviour
     #region Core
     UIManager _uiManager = new UIManager();
     SoundManager _soundManager = new SoundManager();
+    SceneManagerEX _sceneManager = new SceneManagerEX();
 
     public static UIManager UIManager { get { return Instance?._uiManager; } }
     public static SoundManager SoundManager { get { return Instance?._soundManager; } }
+    public static SceneManagerEX SceneManager { get { return Instance?._sceneManager; } }
 
 
     #endregion
