@@ -21,6 +21,13 @@ public class Define
 
     }
 
+    public enum EHumanLiverState
+    {
+        Good,
+        Common,
+        Bad,
+    }
+
     public enum EItemType
     { 
         Soju,

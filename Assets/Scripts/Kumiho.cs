@@ -30,8 +30,6 @@ public class Kumiho : MonoBehaviour
     };
 
 
-    List<Tuple<EKumihoState, int>> _stateThresholds;
-
     Coroutine _coPlayClickedAnimation;
 
     [SerializeField]

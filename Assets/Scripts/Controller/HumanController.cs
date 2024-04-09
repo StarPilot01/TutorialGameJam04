@@ -7,19 +7,55 @@ using DG.Tweening;
 
 public class HumanController : CreatureController
 {
-    
-    
 
 
+
+    //random¿∏∑Œ 
+    EHumanLiverState _liverState;
 
     [SerializeField]
     int _rewardLiverEnergy = 1;
 
     public int RewardLiverEnergy { get { return _rewardLiverEnergy; } }
 
-    float _liverMalfunctionValue = 0.0f;
-    int _liverMalfunctionLevel = 1;
+
+
+    Dictionary<EHumanLiverState, int> _stateRanges = new Dictionary<EHumanLiverState, int>()
+    {
+        { EHumanLiverState.Good , 20},
+        { EHumanLiverState.Common , 50},
+        { EHumanLiverState.Bad , 70}
+    };
+
+
+    
+    float _liverMalfunctionIncreasingCycleSec = 2;
+    int _liverMalfunctionIncrement = 30;
+
+    int _liverMalfunctionValue = 0;
+
+    int LiverMalfunctionValue
+    {
+        get
+        {
+            return _liverMalfunctionValue;
+        }
+        set
+        {
+            _liverMalfunctionValue = value;
+
+
+            UpdateLiverState(_liverMalfunctionValue);
+            moveAnimUpdate(_moveDir);
+
+        }
+    }
+
+
+    //int _liverMalfunctionLevel = 1;
     bool _absorbed = false;
+
+    EMoveDir _prevDir;
 
     private void Awake()
     {
@@ -33,7 +69,7 @@ public class HumanController : CreatureController
 
         CreatureType = ECreatureType.Human;
 
-
+        LiverMalfunctionValue = 0;
 
 
         return true;
@@ -42,7 +78,7 @@ public class HumanController : CreatureController
 
     public void Start()
     {
-       
+        StartCoroutine(IncreaseLiverMalfunctionValuePreodically(_liverMalfunctionIncreasingCycleSec));
     }
 
 
@@ -84,6 +120,84 @@ public class HumanController : CreatureController
         }
     }
 
+    protected override void moveAnimUpdate(EMoveDir dir)
+    {
+        string prefix = _liverState.ToString();
+
+        if(dir != EMoveDir.None)
+        {
+            _prevDir = _moveDir;
+        }
+
+        switch (_moveDir)
+        {
+            case EMoveDir.Up:
+                _moveDirVec = Vector2.up;
+                _animator.Play(prefix + "_Upwalk");
+                _animMoveSpeed = _moveSpeed / 100f;
+                break;
+            case EMoveDir.Down:
+                _moveDirVec = Vector2.down;
+                _animator.Play(prefix + "_Downwalk");
+                _animMoveSpeed = _moveSpeed / 100f;
+                break;
+            case EMoveDir.Right:
+                _moveDirVec = Vector2.right;
+                _animator.Play(prefix + "_Leftwalk");
+                _renderer.flipX = true;
+                _animMoveSpeed = _moveSpeed / 100f;
+
+                break;
+            case EMoveDir.Left:
+                _moveDirVec = Vector2.left;
+                _animator.Play(prefix +"_Leftwalk");
+                _animMoveSpeed = _moveSpeed / 100f;
+
+                break;
+            case EMoveDir.None:
+                UpdateAnimOnStop(_prevDir);
+                _moveDirVec = Vector2.zero;
+                _animMoveSpeed = 0;
+                break;
+
+        }
+    }
+
+    void UpdateAnimOnStop(EMoveDir dir)
+    {
+        string prefix = _liverState.ToString();
+
+        //EMoveDir prevDir = dir;
+        switch (dir)
+        {
+            case EMoveDir.Up:
+               
+                _animator.Play(prefix + "_Upwalk");
+                _animMoveSpeed = _moveSpeed / 100f;
+                break;
+            case EMoveDir.Down:
+                
+                _animator.Play(prefix + "_Downwalk");
+                _animMoveSpeed = _moveSpeed / 100f;
+                break;
+            case EMoveDir.Right:
+                
+                _animator.Play(prefix + "_Leftwalk");
+                _renderer.flipX = true;
+                _animMoveSpeed = _moveSpeed / 100f;
+
+                break;
+            case EMoveDir.Left:
+                
+                _animator.Play(prefix + "_Leftwalk");
+                _animMoveSpeed = _moveSpeed / 100f;
+
+                break;
+           
+
+        }
+    }
+
 
 
     public void BeingAbsorbed()
@@ -109,6 +223,44 @@ public class HumanController : CreatureController
         transform.GetChild(0).transform.localScale = new Vector3(2.7f, 2.7f, 2.7f);
         _animator.Play("Fall");
         
+    }
+
+    void UpdateLiverState(int liverValue)
+    {
+        EHumanLiverState state = EHumanLiverState.Good;
+        
+
+        foreach (var element in _stateRanges)
+        {
+            if (liverValue >= element.Value)
+            {
+                state = element.Key;
+
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        _liverState = state;
+
+
+        
+    }
+
+
+    IEnumerator IncreaseLiverMalfunctionValuePreodically(float cycle)
+    {
+        while(!_absorbed)
+        {
+            LiverMalfunctionValue += _liverMalfunctionIncrement;
+
+            yield return new WaitForSeconds(cycle);
+        }
+
+
+
     }
 }
  

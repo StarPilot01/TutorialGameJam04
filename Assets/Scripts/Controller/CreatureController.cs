@@ -60,37 +60,7 @@ public class CreatureController : BaseController
         {
             _moveDir = value;
 
-            switch (_moveDir)
-            { 
-                case EMoveDir.Up:
-                    _moveDirVec = Vector2.up;
-                    _animator.Play("Upwalk");
-                    _animMoveSpeed = _moveSpeed / 100f;
-                    break;
-                case EMoveDir.Down:
-                    _moveDirVec = Vector2.down;
-                    _animator.Play("Downwalk");
-                    _animMoveSpeed = _moveSpeed / 100f;
-                    break;
-                case EMoveDir.Right:
-                    _moveDirVec = Vector2.right;
-                    _animator.Play("Leftwalk");
-                    _renderer.flipX = true;
-                    _animMoveSpeed = _moveSpeed / 100f;
-
-                    break;
-                case EMoveDir.Left:
-                    _moveDirVec = Vector2.left;
-                    _animator.Play("Leftwalk");
-                    _animMoveSpeed = _moveSpeed / 100f;
-
-                    break;
-                case EMoveDir.None:
-                    _moveDirVec = Vector2.zero;
-                    _animMoveSpeed = 0;
-                    break;
-            
-            }
+            moveAnimUpdate(_moveDir);
 
         }
     }
@@ -157,6 +127,9 @@ public class CreatureController : BaseController
     {
         AnimUpdate();
     }
+
+
+
     protected virtual void FindWayPoint()
     {
         Vector2 diff = _destinationCellPos - _cellPos;
@@ -297,5 +270,10 @@ public class CreatureController : BaseController
     void AnimUpdate()
     {
         _animator.SetFloat("MoveSpeed", _animMoveSpeed);
+    }
+
+    protected virtual void moveAnimUpdate(EMoveDir dir)
+    {
+        
     }
 }
