@@ -38,9 +38,9 @@ public class AICommander
     {
         //choose command
 
-        //int randNum = GetRandCommandNumber();
+        int randNum = GetRandCommandNumber();
 
-        int randNum = 0;
+        //int randNum = 0;
 
         switch ((EAICommand)randNum)
         { 
@@ -53,6 +53,7 @@ public class AICommander
 
                 break;
             case EAICommand.Wait:
+                human.Wait(2);
                 break;
 
             default:
@@ -71,5 +72,15 @@ public class AICommander
         return randNum;
 
 
+    }
+
+    public void NotifyDead(HumanController human)
+    {
+        _humans.Remove(human);
+    }
+
+    public void AddHuman(HumanController human)
+    {
+        _humans.Add(human);
     }
 }

@@ -7,16 +7,14 @@ using DG.Tweening;
 
 public class HumanController : CreatureController
 {
-
-
-
+    //AnimatorController
     //random으로 
     EHumanLiverState _liverState;
 
-    [SerializeField]
-    int _rewardLiverEnergy = 1;
+    public EHumanGender Gender { get; protected set; }
 
-    public int RewardLiverEnergy { get { return _rewardLiverEnergy; } }
+
+    public int RewardLiverEnergy { get { return _rewardLiverEnergyDic[_liverState]; } }
 
 
 
@@ -26,15 +24,24 @@ public class HumanController : CreatureController
         { EHumanLiverState.Common , 50},
         { EHumanLiverState.Bad , 70}
     };
+    
+    Dictionary<EHumanLiverState, int> _rewardLiverEnergyDic = new Dictionary<EHumanLiverState, int>()
+    {
+        { EHumanLiverState.Good , 5},
+        { EHumanLiverState.Common , 1},
+        { EHumanLiverState.Bad , -10}
+    };
 
 
     
     float _liverMalfunctionIncreasingCycleSec = 2;
-    int _liverMalfunctionIncrement = 30;
+    int _liverMalfunctionIncrement = 0;
+
+    int _deadThreshold = 5;
 
     int _liverMalfunctionValue = 0;
 
-    int LiverMalfunctionValue
+    public int LiverMalfunctionValue
     {
         get
         {
@@ -42,10 +49,17 @@ public class HumanController : CreatureController
         }
         set
         {
+
             _liverMalfunctionValue = value;
+
+            if(_liverMalfunctionValue < 0)
+            {
+                _liverMalfunctionValue = 0;
+            }
 
 
             UpdateLiverState(_liverMalfunctionValue);
+            CheckLiverMalfunctionValueThresholdExceeded();
             moveAnimUpdate(_moveDir);
 
         }
@@ -53,7 +67,9 @@ public class HumanController : CreatureController
 
 
     //int _liverMalfunctionLevel = 1;
-    bool _absorbed = false;
+    bool _bAbsorbed = false;
+    bool _bDead = false;
+
 
     EMoveDir _prevDir;
 
@@ -102,7 +118,7 @@ public class HumanController : CreatureController
 
     private void OnMouseDown()
     {
-        if (!_absorbed)
+        if (!_bAbsorbed && !_bDead)
         {
             Managers.GameManager.OnHumanClicked(this);
 
@@ -111,10 +127,12 @@ public class HumanController : CreatureController
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag.Equals("Eatable"))
+
+        IEatable eatable = collision.GetComponent<IEatable>();
+
+        if (eatable != null)
         {
-            IEatable eatable = collision.GetComponent<IEatable>();
-            eatable.OnEat();
+            eatable.OnEat(this);
 
             
         }
@@ -151,6 +169,7 @@ public class HumanController : CreatureController
             case EMoveDir.Left:
                 _moveDirVec = Vector2.left;
                 _animator.Play(prefix +"_Leftwalk");
+                _renderer.flipX = false;
                 _animMoveSpeed = _moveSpeed / 100f;
 
                 break;
@@ -190,6 +209,7 @@ public class HumanController : CreatureController
             case EMoveDir.Left:
                 
                 _animator.Play(prefix + "_Leftwalk");
+                _renderer.flipX = false;
                 _animMoveSpeed = _moveSpeed / 100f;
 
                 break;
@@ -199,28 +219,84 @@ public class HumanController : CreatureController
     }
 
 
+    void CheckLiverMalfunctionValueThresholdExceeded()
+    {
+        if(_liverMalfunctionValue >= _deadThreshold)
+        {
+            DeadFromLiverMalfunction();
+        }
+    }
+
+    void DeadFromLiverMalfunction()
+    {
+
+        Managers.AICommander.NotifyDead(this);
+
+        _bDead = true;
+        //간 에너지 깎기
+        Managers.GameManager.kumiho.LiverEnergy += RewardLiverEnergy;
+        //죽음 애니메이션
+
+
+        Sequence sequence = DOTween.Sequence()
+            .Append(transform.GetChild(0).transform.DOMoveY(transform.GetChild(0).position.y + 1.5f, 0.7f))
+            .Join(_renderer.DOFade(0, 0.50f))
+            .OnComplete(() =>
+            {
+                Managers.ObjectManager.Despawn<HumanController>(this);
+
+            }
+            );
+
+        _animator.Play("Fall");
+
+
+    }
+
+    void DeadFromAbsorption()
+    {
+        Managers.AICommander.NotifyDead(this);
+
+        _bDead = true;
+        //간 에너지 깎기
+        //죽음 애니메이션
+
+        Managers.ObjectManager.Despawn<HumanController>(this);
+    }
+
+
+
+    public void Kill()
+    {
+        Managers.AICommander.NotifyDead(this);
+
+        _bDead = true;
+
+        Managers.ObjectManager.Despawn<HumanController>(this);
+
+
+    }
 
     public void BeingAbsorbed()
     {
-        Sequence sequence = DOTween.Sequence().SetAutoKill(false)
+        Sequence sequence = DOTween.Sequence()
             .Append(transform.GetChild(0).transform.DOMoveY(transform.GetChild(0).position.y + 1.5f, 1))
             .Join(_renderer.DOFade(0, 0.75f))
             .OnComplete(() =>
             {
-                //Debug.Log("Complete");
-                Managers.ObjectManager.Despawn<HumanController>(this);
+                DeadFromAbsorption();
             }
             ); 
 
-        //흡수당할 때 목적지에 도착으로 변경하고 정지
+    
+
+        _bAbsorbed = true;
+        Managers.GameManager.kumiho.LiverEnergy += RewardLiverEnergy;
+
+
+        PathFindingState = EPathfindingState.Wait;
+
         
-
-        _absorbed = true;
-        PathFindingState = EPathfindingState.ArrivedDestination;
-
-        //추가 애니메이션 실행
-
-        transform.GetChild(0).transform.localScale = new Vector3(2.7f, 2.7f, 2.7f);
         _animator.Play("Fall");
         
     }
@@ -252,7 +328,7 @@ public class HumanController : CreatureController
 
     IEnumerator IncreaseLiverMalfunctionValuePreodically(float cycle)
     {
-        while(!_absorbed)
+        while(!_bAbsorbed)
         {
             LiverMalfunctionValue += _liverMalfunctionIncrement;
 
@@ -261,6 +337,33 @@ public class HumanController : CreatureController
 
 
 
+    }
+
+
+    public override void Wait(float time)
+    {
+        base.Wait(time);
+
+
+    }
+
+
+    protected override IEnumerator CoWait(float time)
+    {
+        Debug.Log("Wait");
+        PathFindingState = EPathfindingState.Wait;
+
+        yield return new WaitForSeconds(time);
+
+
+        Managers.AICommander.RequestCommand(this);
+
+    }
+    protected override void ArrivedAtDestination()
+    {
+        base.ArrivedAtDestination();
+
+        Managers.AICommander.RequestCommand(this);
     }
 }
  

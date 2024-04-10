@@ -5,6 +5,8 @@ using static Define;
 
 public class Ursa : ItemController
 {
+    [SerializeField]
+    int _liverMalfunctionValueDecrement;
     private void Awake()
     {
         Init();
@@ -18,10 +20,12 @@ public class Ursa : ItemController
         return true;
     }
 
-    public override void OnEat()
+    public override void OnEat(HumanController human)
     {
-        Debug.Log("Eat Ursa");
+        
         Managers.ObjectManager.Despawn<Ursa>(this);
+
+        human.LiverMalfunctionValue -= _liverMalfunctionValueDecrement;
     }
 
     public void OnMouseDown()

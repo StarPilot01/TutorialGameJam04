@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using static Define;
 public class HumanSpawner
 {
     
@@ -30,7 +30,14 @@ public class HumanSpawner
             Vector2 pos = GameMap.GetEmptyCellRandomly();
             pos = GameMap.CellToWorld(pos);
             //남자여자 랜덤으로
-            Managers.ObjectManager.Spawn<HumanController>(pos, "Human");
+
+            int genderIdx = Random.Range(0, 2);
+
+            string resourceName = ((EHumanGender)genderIdx).ToString();
+
+            Managers.ObjectManager.Spawn<HumanController>(pos, resourceName);
+
+            
         }
     }
     

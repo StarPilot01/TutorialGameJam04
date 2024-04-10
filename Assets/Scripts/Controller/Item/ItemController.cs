@@ -24,7 +24,7 @@ public class ItemController : BaseController , IEatable
         return true;
     }
 
-    public virtual void OnEat()
+    public virtual void OnEat(HumanController human)
     {
         
     }

@@ -5,5 +5,5 @@ using static Define;
 
 public interface IEatable
 {
-    public void OnEat();
+    public void OnEat(HumanController human);
 }

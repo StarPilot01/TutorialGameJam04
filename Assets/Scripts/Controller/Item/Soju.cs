@@ -5,6 +5,8 @@ using static Define;
 
 public class Soju : ItemController
 {
+    [SerializeField]
+    int _liverMalfunctionValueIncrement;
     private void Awake()
     {
         Init();
@@ -18,10 +20,13 @@ public class Soju : ItemController
         return true;
     }
 
-    public override void OnEat()
+    public override void OnEat(HumanController human)
     {
-        Debug.Log("Eat Soju");
+        
         Managers.ObjectManager.Despawn<Soju>(this);
+
+        human.LiverMalfunctionValue += _liverMalfunctionValueIncrement;
+
     }
 
     public void OnMouseDown()

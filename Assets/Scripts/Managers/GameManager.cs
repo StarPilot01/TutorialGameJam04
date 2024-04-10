@@ -84,7 +84,9 @@ public class GameManager
             case EClickMode.Eat:
                 EatHuman(human);
                 break;
-            case EClickMode.Place:
+            case EClickMode.Kill:
+                Managers.ObjectManager.Instantiate("Blood Splash").transform.position = human.transform.position;
+                human.Kill();
                 break;
         }
     }
@@ -118,9 +120,9 @@ public class GameManager
         //²É°¡¸¶ »ý¼º
         Palanquin palanquin = InstantiatePalanquin(human);
 
-        Sequence sequence = DOTween.Sequence().SetAutoKill(false)
-            .Append(palanquin.transform.DOShakeRotation(1f, 5f))
-            .Append(palanquin.GetComponent<SpriteRenderer>().DOFade(0, 1f))
+        Sequence sequence = DOTween.Sequence()
+            .Append(palanquin.transform.DOShakeRotation(0.4f, 5f))
+            .Append(palanquin.GetComponent<SpriteRenderer>().DOFade(0, 0.4f))
             .OnComplete(() => Managers.ObjectManager.Despawn<Palanquin>(palanquin));
 
 

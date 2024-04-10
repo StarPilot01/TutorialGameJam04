@@ -25,17 +25,24 @@ public class GameMap : MonoBehaviour
     {
         _map = new BaseController[(int)_cellCount.y, (int)_cellCount.x];
 
+
+        //Vector2 pos = GameMap.GetEmptyCellRandomly();
+        //pos = GameMap.CellToWorld(pos);
+        ////남자여자 랜덤으로
+        //Managers.ObjectManager.Spawn<HumanController>(pos, "Human");
+
+        //HumanController h = Managers.ObjectManager.Spawn<FemaleController>(CellToWorld(0, 0), "Human");
         
-        Managers.ObjectManager.Spawn<HumanController>(CellToWorld(0, 0), "Human");
-        Managers.ObjectManager.Spawn<HumanController>(CellToWorld(9, 4), "Human");
-        Managers.ObjectManager.Spawn<HumanController>(CellToWorld(0, 6), "Human");
-        Managers.ObjectManager.Spawn<HumanController>(CellToWorld(20, 0), "Human");
-        Managers.ObjectManager.Spawn<HumanController>(CellToWorld(20, 6), "Human");
+
+        //Managers.ObjectManager.Spawn<HumanController>(CellToWorld(9, 4), "Human");
+        //Managers.ObjectManager.Spawn<HumanController>(CellToWorld(0, 6), "Human");
+        //Managers.ObjectManager.Spawn<HumanController>(CellToWorld(20, 0), "Human");
+        //Managers.ObjectManager.Spawn<HumanController>(CellToWorld(20, 6), "Human");
 
         //Managers.ObjectManager.Spawn<HumanController>(CellToWorld(1, 1), "Human");
         //Managers.ObjectManager.Spawn<HumanController>(CellToWorld(5, 5), "Human");
 
-        Debug.Log(CellToWorld(0, 0));
+
         //Debug.Log(WorldToCell(0.5f, -0.5f));
         //Debug.Log(WorldToCell(1.1f, -1.1f));
     }

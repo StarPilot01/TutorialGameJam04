@@ -28,6 +28,14 @@ public class Define
         Bad,
     }
 
+    public enum EHumanGender
+    { 
+        Male,
+        Female
+    
+    }
+
+
     public enum EItemType
     { 
         Soju,

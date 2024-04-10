@@ -61,7 +61,8 @@ public class Kumiho : MonoBehaviour
 
             if (liverEnergy <= 0)
             {
-                OnDead();
+                liverEnergy = 0;
+                OnDead?.Invoke();
             }
 
         }
@@ -121,7 +122,7 @@ public class Kumiho : MonoBehaviour
     public void EatHuman(HumanController human)
     {
         human.BeingAbsorbed();
-        LiverEnergy += human.RewardLiverEnergy;
+        //LiverEnergy += human.RewardLiverEnergy;
 
 
 

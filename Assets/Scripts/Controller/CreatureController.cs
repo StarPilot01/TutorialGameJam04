@@ -11,7 +11,8 @@ public class CreatureController : BaseController
     { 
         Moving,
         FindWayPoint,
-        ArrivedDestination
+        ArrivedDestination,
+        Wait,
     
     }
 
@@ -87,6 +88,16 @@ public class CreatureController : BaseController
                     break;
                 case EPathfindingState.ArrivedDestination:
                     MoveDir = EMoveDir.None;
+                    ArrivedAtDestination();
+                    break;
+                case EPathfindingState.Wait:
+                    {
+                        MoveDir = EMoveDir.None;
+                        _moveDirVec = Vector2.zero;
+                        _rigidBody.velocity = Vector2.zero;
+                    }
+                    
+
                     break;
 
                 default:
@@ -221,7 +232,11 @@ public class CreatureController : BaseController
         //현재 Pos랑 진행방향 Pos에 우루사 못 놓게 하기
     }
 
-    
+    protected virtual void ArrivedAtDestination()
+    {
+        Debug.Log("Arrived");
+
+    }
 
     bool HasArrivedAtWaypoint()
     {
@@ -242,7 +257,6 @@ public class CreatureController : BaseController
             MoveDir = EMoveDir.None;
 
 
-
             return true;
         }
 
@@ -252,12 +266,31 @@ public class CreatureController : BaseController
 
     public void MoveToDest(Vector2 pos)
     {
+        Debug.Log("Go");
         _destinationCellPos = pos;
 
         PathFindingState = EPathfindingState.FindWayPoint;
 
 
     }
+
+    public virtual void Wait(float time)
+    {
+        StartCoroutine(CoWait(time));
+
+    }
+
+    protected virtual IEnumerator CoWait(float time)
+    {
+        Debug.Log("Wait");
+        PathFindingState = EPathfindingState.Wait;
+
+        yield return new WaitForSeconds(time);
+
+
+
+    }
+
 
     public override void OnSpawn()
     {
@@ -266,6 +299,9 @@ public class CreatureController : BaseController
         RefreshCellPos();
 
     }
+
+
+
 
     void AnimUpdate()
     {

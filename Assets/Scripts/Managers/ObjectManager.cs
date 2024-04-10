@@ -79,6 +79,7 @@ public class ObjectManager
 
         if(rigid != null)
         {
+            
             rigid.position = position;
 
         }
@@ -101,6 +102,9 @@ public class ObjectManager
 
         if (type == typeof(HumanController))
         {
+            Managers.AICommander.AddHuman(go.GetComponent<HumanController>());
+
+
             return go.GetComponent<HumanController>() as T;
         }
         else if(type == typeof(Palanquin))
