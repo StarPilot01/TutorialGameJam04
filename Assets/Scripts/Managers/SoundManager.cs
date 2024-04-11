@@ -7,104 +7,47 @@ using static Define;
 
 public class SoundManager
 {
-    static SoundManager s_instance;
 
-    public static SoundManager Instance { get { return s_instance; } }
-
-
-
-
-    [SerializeField]
-    AudioMixer m_AudioMixer;
-    [SerializeField]
     AudioSource[] _audioSources = new AudioSource[(int)Define.ESoundType.Max];
 
     Dictionary<string, AudioClip> _audioClips = new Dictionary<string, AudioClip>();
 
-    //Slider m_MusicMasterSlider;
-    //Slider m_MusicBGMSlider;
-    //Slider m_MusicSFXSlider;
+    private GameObject _soundRoot = null;
 
-    float _MasterVolumeSize = 0.3f;
-    float _BGMVolumeSize = 0.3f;
-    float _SFXVolumeSize = 0.3f;
-
-    //float _changedMasterVolumeSize;
-    //float _changedBGMVolumeSize;
-    //float _changedSFXVolumeSize;
-
-    private void Awake()
+    public float BGMInitVolume { get; } = 0.4f;
+    public float SFXInitVolume { get; } = 0.4f;
+    public void Init()
     {
-        
+        if(_soundRoot == null)
+        {
+            _soundRoot = GameObject.Find("@SoundRoot");
+            if (_soundRoot == null)
+            {
+                _soundRoot = new GameObject { name = "@SoundRoot" };
+                UnityEngine.Object.DontDestroyOnLoad(_soundRoot);
 
+                string[] soundTypeNames = System.Enum.GetNames(typeof(Define.ESoundType));
+                for (int count = 0; count < soundTypeNames.Length - 1; count++)
+                {
+                    GameObject go = new GameObject { name = soundTypeNames[count] };
+                    _audioSources[count] = go.AddComponent<AudioSource>();
+                    go.transform.parent = _soundRoot.transform;
+                }
 
-            _audioSources[(int)Define.ESoundType.BGM].volume = _MasterVolumeSize;
-            _audioSources[(int)Define.ESoundType.SubBGM].volume = _MasterVolumeSize;
-            _audioSources[(int)Define.ESoundType.SFX].volume = _SFXVolumeSize;
-
-
-
+                _audioSources[(int)Define.ESoundType.BGM].loop = true;
+                _audioSources[(int)Define.ESoundType.BGM].volume = BGMInitVolume;
+                _audioSources[(int)Define.ESoundType.SubBGM].loop = true;
+                _audioSources[(int)Define.ESoundType.SubBGM].volume = SFXInitVolume;
+            }
+        }
     }
 
-    private void Update()
+    public void Clear()
     {
-
+        foreach (AudioSource audioSource in _audioSources)
+            audioSource.Stop();
+        _audioClips.Clear();
     }
-
-    void MasterChanged(float value)
-    {
-        _MasterVolumeSize = value;
-        BgmChanged(value);
-        SFXChanged(value);
-
-
-
-
-    }
-    void BgmChanged(float value)
-    {
-        _audioSources[(int)Define.ESoundType.BGM].volume = value;
-        _audioSources[(int)Define.ESoundType.SubBGM].volume = value;
-
-        _BGMVolumeSize = value;
-
-
-    }
-    void SFXChanged(float value)
-    {
-        _audioSources[(int)Define.ESoundType.SFX].volume = value;
-
-        _SFXVolumeSize = value;
-    }
-
-
-
-    public void SetSlider()
-    {
-        
-
-
-    }
-
-    public void SetMasterVolume(float volume)
-    {
-        Debug.Log(volume);
-        m_AudioMixer.SetFloat("Master", Mathf.Log10(volume) * 20);
-
-        Debug.Log(Mathf.Log10(volume) * 20);
-
-    }
-
-    public void SetBGMVolume(float volume)
-    {
-        m_AudioMixer.SetFloat("BGM", Mathf.Log10(volume) * 20);
-    }
-
-    public void SetSFXVolume(float volume)
-    {
-        m_AudioMixer.SetFloat("SFX", Mathf.Log10(volume) * 20);
-    }
-
 
     public void Play(ESoundType type, AudioClip audioClip)
     {
@@ -180,8 +123,8 @@ public class SoundManager
     AudioClip LoadAudioClip(ESoundType type, string fileName)
     {
         string path = "Sounds/";
-        //BGM or SubBGM
-        path += (type == ESoundType.BGM || type == ESoundType.SubBGM) ? "BGM/" : "SFX/";
+        
+        path += type.ToString() +"/";
 
         string key = path + fileName;
 
@@ -197,5 +140,15 @@ public class SoundManager
         _audioClips.Add(key, audioClip);
 
         return audioClip;
+    }
+
+    public void SetBGMVolume(float volume)
+    {
+        _audioSources[(int)Define.ESoundType.BGM].volume = volume;
+    }
+    
+    public void SetSFXVolume(float volume)
+    {
+        _audioSources[(int)Define.ESoundType.SFX].volume = volume;
     }
 }

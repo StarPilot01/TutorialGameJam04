@@ -28,9 +28,9 @@ public class GameScene : BaseScene
 
     private void Start()
     {
-        
+        Managers.SoundManager.Play(ESoundType.BGM, "Game");
 
-
+        Managers.GameManager.OnGameOver += StopSpawn;
 
         _sojuSpawner.SetSpawnCycle(_sojuSpawnCycle);
         _sojuSpawner.StartSpawn();
@@ -50,16 +50,38 @@ public class GameScene : BaseScene
         Kumiho = FindObjectOfType<Kumiho>();
         _sojuSpawner = new SojuSpawner();
         _humanSpawner = new HumanSpawner();
+
+
+        Screen.SetResolution(1280, 720, false);
+
     }
 
-        // Update is called once per frame
+    // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Managers.GameManager.RequestInstantiateUrsa(pos);
+        }
     }
 
     public override void Clear()
     {
         
+    }
+
+    void StopSpawn()
+    {
+        _sojuSpawner.Stop();
+        _humanSpawner.Stop();
+    }
+
+    public void ResetAll()
+    {
+        Managers.GameManager.OnGameOver -= StopSpawn;
+        StopSpawn();
+        UI.ResetAll();
+
     }
 }

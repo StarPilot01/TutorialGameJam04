@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static Define;
 
 
@@ -112,6 +113,15 @@ public class ObjectManager
             return go.GetComponent<Palanquin>() as T;
 
         }
+        else if(type == typeof(Soju))
+        {
+            GameMap.PlaceItemToMap_World(position);
+        }
+        else if(type == typeof(Ursa))
+        {
+            GameMap.PlaceItemToMap_World(position);
+
+        }
 
 
         return null;
@@ -123,8 +133,18 @@ public class ObjectManager
     //아직 Pooling 안하고 있으니 무시해도 됨
     public void Despawn<T>(T obj) where T: UnityEngine.Object
     {
-        //System.Type type = typeof(T);
-        
+        System.Type type = typeof(T);
+
+        if(type == typeof(Soju))
+        {
+            GameMap.EraseItemFromMap_World(obj.GameObject().transform.position);
+        }
+        else if (type == typeof(Ursa))
+        {
+            GameMap.EraseItemFromMap_World(obj.GameObject().transform.position);
+
+        }
+
 
         Destory(obj.GameObject());   
     }

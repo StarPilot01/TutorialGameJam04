@@ -54,6 +54,8 @@ public class Managers : MonoBehaviour
             DontDestroyOnLoad(managersObject);
             s_instance = managersObject.GetComponent<Managers>();
 
+
+            s_instance._soundManager.Init();
             //UIManager.Init();
             
             //ScoreManager.Test();

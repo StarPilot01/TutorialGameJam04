@@ -10,10 +10,11 @@ public class Kumiho : MonoBehaviour
 {
     Animator _animator;
 
+    bool _bDead = false;
+    int _liverEnergy = 40;
+    int _maxLiverEnergy = 100;
 
-    int liverEnergy = 0;
-    int maxLiverEnergy = 100; //임의로 최대치 정해놨습니다.
-
+    int _liverEnergyDecrement = 1;
 
     enum EKumihoState
     {
@@ -36,39 +37,39 @@ public class Kumiho : MonoBehaviour
     float _clickedAnimationDuration;
 
     #region Action
-    public Action OnLiverEnergyChanged;
+    public Action<int> OnLiverEnergyChanged;
     public Action OnDead;
     #endregion
     public int LiverEnergy
     {
         get
         {
-            return liverEnergy;
+            return _liverEnergy;
         }
         set
         {
-            liverEnergy = value;
+            _liverEnergy = value;
 
-            if (liverEnergy > maxLiverEnergy)
-                liverEnergy = maxLiverEnergy;
-
-
-            OnLiverEnergyChanged.Invoke();
+            if (_liverEnergy > _maxLiverEnergy)
+                _liverEnergy = _maxLiverEnergy;
 
 
-            PlayClickedAnim(value);
-            //UpdateStateAnim();
+            OnLiverEnergyChanged.Invoke(_liverEnergy);
 
-            if (liverEnergy <= 0)
+
+            //PlayClickedAnim(value);
+            UpdateStateAnim();
+            if (_liverEnergy <= 0)
             {
-                liverEnergy = 0;
+                _liverEnergy = 0;
+                _bDead = true;
                 OnDead?.Invoke();
             }
 
         }
     }
 
-    public int MaxLiverEnergy { get { return maxLiverEnergy; } set { maxLiverEnergy = value; } }
+    public int MaxLiverEnergy { get { return _maxLiverEnergy; } set { _maxLiverEnergy = value; } }
 
     private void Awake()
     {
@@ -78,46 +79,47 @@ public class Kumiho : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        LiverEnergy = 40;
+
+        StartCoroutine(CoDecreaseLiverEnergyPredically(1.5f));
+
+        OnDead += Dead;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            Managers.GameManager.ClickMode = EClickMode.Eat;
-        }
-        else if(Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            Managers.GameManager.ClickMode = EClickMode.Place;
-        }
-        else if(Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            Managers.GameManager.ClickMode = EClickMode.Pickup;
-        }
-        else if(Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            Managers.GameManager.ClickMode = EClickMode.Kill;
-        }
+        InputKey();
     }
 
-    IEnumerator CoPlayClickedAnimation(bool isSucceed , float duration)
+    IEnumerator CoDecreaseLiverEnergyPredically(float cycle)
     {
-        if (isSucceed)
+        while(!_bDead)
         {
-            
-            _animator.Play("Succeed",0,0);
+            _liverEnergy -= _liverEnergyDecrement;
+            OnLiverEnergyChanged?.Invoke(_liverEnergy);
+
+            yield return new WaitForSeconds(cycle);
         }
-        else
-        {
-            _animator.Play("Fail",0,0);
-
-        }
-
-        yield return new WaitForSeconds(duration);
-
-        UpdateStateAnim();
     }
+
+    //IEnumerator CoPlayClickedAnimation(bool isSucceed , float duration)
+    //{
+    //    if (isSucceed)
+    //    {
+    //        
+    //        _animator.Play("Succeed",0,0);
+    //    }
+    //    else
+    //    {
+    //        _animator.Play("Fail",0,0);
+    //
+    //    }
+    //
+    //    yield return new WaitForSeconds(duration);
+    //
+    //    UpdateStateAnim();
+    //}
 
     public void EatHuman(HumanController human)
     {
@@ -128,24 +130,57 @@ public class Kumiho : MonoBehaviour
 
     }
 
-    
-
-    void PlayClickedAnim(float value)
+    void InputKey()
     {
-        if (_coPlayClickedAnimation != null)
+        if(_bDead)
         {
-            StopCoroutine(_coPlayClickedAnimation);
+            return;
         }
-        _coPlayClickedAnimation =
-            StartCoroutine(CoPlayClickedAnimation(value >= 0, _clickedAnimationDuration));
+
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            Managers.GameManager.ClickMode = EClickMode.Eat;
+
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            Managers.GameManager.ClickMode = EClickMode.Place;
+
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            Managers.GameManager.ClickMode = EClickMode.Pickup;
+
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            Managers.GameManager.ClickMode = EClickMode.Kill;
+        }
     }
+    void Dead()
+    {
+        _animator.Play("Fail");
+
+        Managers.GameManager.GameOver();
+    }
+
+    //void PlayClickedAnim(float value)
+    //{
+    //    if (_coPlayClickedAnimation != null)
+    //    {
+    //        StopCoroutine(_coPlayClickedAnimation);
+    //    }
+    //    _coPlayClickedAnimation =
+    //        StartCoroutine(CoPlayClickedAnimation(value >= 0, _clickedAnimationDuration));
+    //}
     void UpdateStateAnim()
     {
         string playAnim = EKumihoState.Bad.ToString();
 
         foreach(var state in _stateRanges)
         {
-            if(liverEnergy >= state.Value)
+            if(_liverEnergy >= state.Value)
             {
                 playAnim = state.Key.ToString();
                 
@@ -158,5 +193,12 @@ public class Kumiho : MonoBehaviour
 
         _animator.Play(playAnim);
     }
-    
+
+
+    public void ResetAll()
+    {
+        LiverEnergy = 40;
+        _bDead = false;
+        StopAllCoroutines();
+    }
 }

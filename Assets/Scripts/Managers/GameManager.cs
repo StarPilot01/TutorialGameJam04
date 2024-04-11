@@ -7,6 +7,7 @@ using UnityEngine;
 using static Define;
 using DG.Tweening;
 using UnityEngine.Events;
+using UnityEngine.AI;
 
 public class GameManager
 {
@@ -23,7 +24,8 @@ public class GameManager
         {
             _clickMode = value;
             
-            
+            Managers.SoundManager.Play(ESoundType.SFX, "SwitchMode");
+
             OnClickModeChanged?.Invoke(_clickMode);
 
             
@@ -54,27 +56,58 @@ public class GameManager
     #region Action
     public event Action OnGameOver;
     public event Action OnEatHuman;
+    public event Action<int> OnUrsaChagned;
 
-    public UnityAction<EClickMode> OnClickModeChanged;
+    public event Action<EClickMode> OnClickModeChanged;
     
     #endregion
 
     const float palanquinYDiff = 1.1f;
-    
+    public bool bGameOver { get; private set; }
+    int _ursaCount = 0;
+    int _pickedupSojuCount = 0;
+
+    protected int UrsaCount
+    {
+        get { return _ursaCount; }
+        set
+        {
+            _ursaCount = value;
+            OnUrsaChagned?.Invoke(_ursaCount);
+        }
+    }
+
     public GameManager()
     {
         Init();
     }
     public void Init()
     {
+        _clickMode = EClickMode.Eat;
+    }
+
+    public void ResetAll()
+    {
+        _elapsedTime = 0.0f;
         ClickMode = EClickMode.Eat;
+        UrsaCount = 0;
+        _pickedupSojuCount = 0;
+        bGameOver = false;
+
+        _kumiho.ResetAll();
+        Managers.AICommander.ResetAll();
+        GameScene gameScene = (GameScene)Managers.SceneManager.CurrentScene;
+        gameScene.ResetAll();
     }
 
     public void GameOver()
     {
         //Action »£√‚
-        OnGameOver();
-        
+        OnGameOver?.Invoke();
+        bGameOver = true;
+        Managers.SoundManager.Stop(ESoundType.BGM);
+        Managers.SoundManager.Play(ESoundType.SFX, "GameOver");
+        Managers.AICommander.StopAllHuman();
     }
     
     public void OnHumanClicked(HumanController human)
@@ -82,9 +115,11 @@ public class GameManager
         switch(_clickMode)
         {
             case EClickMode.Eat:
+                Managers.SoundManager.Play(ESoundType.SFX, "Eat");
                 EatHuman(human);
                 break;
             case EClickMode.Kill:
+                Managers.SoundManager.Play(ESoundType.SFX, "Kill");
                 Managers.ObjectManager.Instantiate("Blood Splash").transform.position = human.transform.position;
                 human.Kill();
                 break;
@@ -99,19 +134,53 @@ public class GameManager
             return;
         }
 
+        Managers.ObjectManager.Instantiate("Pickup_Effect").transform.position = item.transform.position;
 
-        switch(item.ItemType)
+        switch (item.ItemType)
         {
             case EItemType.Soju:
+                {
+                    _pickedupSojuCount++;
+                    CheckExchangeableSojuToUrsa();
+                }
+
+                Managers.SoundManager.Play(ESoundType.SFX, "Pickup");
                 Managers.ObjectManager.Despawn<ItemController>(item);
                 break;
             case EItemType.Ursa:
+                Managers.SoundManager.Play(ESoundType.SFX, "Pickup");
+
                 Managers.ObjectManager.Despawn<ItemController>(item);
                 break;
         }
     }
-    
 
+    public void RequestInstantiateUrsa(Vector2 pos)
+    {
+        if(ClickMode != EClickMode.Place || !GameMap.IsInsideMapArea(pos) || _ursaCount <= 0)
+        {
+            return;
+        }
+
+
+        Managers.SoundManager.Play(ESoundType.SFX, "Place");
+
+        GameObject ursa = Managers.ObjectManager.Instantiate("Ursa");
+        ursa.transform.position = pos;
+
+        UrsaCount--;
+    }
+    
+    void CheckExchangeableSojuToUrsa()
+    {
+       
+
+        if (_pickedupSojuCount >= 3)
+        {
+            UrsaCount++;
+            _pickedupSojuCount = 0;
+        }
+    }
     void EatHuman(HumanController human)
     {
         
@@ -140,4 +209,6 @@ public class GameManager
 
         return palanquin;
     }
+
+    
 }

@@ -31,14 +31,25 @@ public class AICommander
     {
         _humans.TryGetValue(human, out HumanController requestedHuman);
 
-        SendCommandToAI(human);
+        if(human != null)
+        {
+            SendCommandToAI(human);
+
+        }
     }
   
     void SendCommandToAI(HumanController human)
     {
         //choose command
 
-        int randNum = GetRandCommandNumber();
+        //int randNum = GetRandCommandNumber();
+
+        //TODO : ³ªÁß¿¡ ¹Ù²Þ
+        int randNum = Random.Range(0, 3);
+        if(randNum == 2)
+        {
+            randNum = 0;
+        }
 
         //int randNum = 0;
 
@@ -53,7 +64,7 @@ public class AICommander
 
                 break;
             case EAICommand.Wait:
-                human.Wait(2);
+                human.Wait(1.5f);
                 break;
 
             default:
@@ -69,6 +80,8 @@ public class AICommander
     {
         int randNum = Random.Range(0, (int)EAICommand.Length);
 
+        
+
         return randNum;
 
 
@@ -82,5 +95,39 @@ public class AICommander
     public void AddHuman(HumanController human)
     {
         _humans.Add(human);
+    }
+
+    public void StopAllHuman()
+    {
+
+
+        foreach(HumanController human in _humans)
+        {
+            human.StopAllCoroutines();
+            human.StopAllAction();
+
+          
+
+        }
+
+
+        _humans.Clear();
+
+        //Debug.Log(_humans.Count);
+    }
+
+    public void ResetAll()
+    {
+        foreach (HumanController human in _humans)
+        {
+            human.StopAllCoroutines();
+            human.StopAllAction();
+
+            Managers.ObjectManager.Despawn(human);
+
+        }
+
+
+        _humans.Clear();
     }
 }

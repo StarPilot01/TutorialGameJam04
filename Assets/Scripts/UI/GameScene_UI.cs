@@ -15,6 +15,10 @@ public class GameScene_UI : MonoBehaviour
     //Image _gameModeIndicatorImage;
     [SerializeField] 
     Image[] _clickModeIndicatorImages;
+    [SerializeField]
+    TextMeshProUGUI _possessionCountText;
+    [SerializeField]
+    TextMeshProUGUI _liverEnergyText;
     // Start is called before the first frame update
 
     private void Awake()
@@ -26,6 +30,8 @@ public class GameScene_UI : MonoBehaviour
         
         Managers.GameManager.kumiho.OnLiverEnergyChanged += SetLiverEnergyFill;
         Managers.GameManager.OnClickModeChanged += VisibleIndicator;
+        Managers.GameManager.OnUrsaChagned += UpdateUrsaCount;
+        Managers.GameManager.kumiho.OnLiverEnergyChanged += UpdateLiverEnergy;
     }
 
     // Update is called once per frame
@@ -35,7 +41,7 @@ public class GameScene_UI : MonoBehaviour
     }
 
 
-    public void SetLiverEnergyFill()
+    public void SetLiverEnergyFill(int energy)
     {
         _liverFillImage.fillAmount =
             (float)Managers.GameManager.kumiho.LiverEnergy / (float)Managers.GameManager.kumiho.MaxLiverEnergy;
@@ -62,5 +68,31 @@ public class GameScene_UI : MonoBehaviour
     //    modeImage.sprite = modeSprites[index];
     //}
 
+    public void UpdateUrsaCount(int count)
+    {
+        _possessionCountText.text = count.ToString();
+    }
 
+    public void UpdateLiverEnergy(int energy)
+    {
+        _liverEnergyText.text = energy.ToString();  
+    }
+
+    public void ReturnToLobby()
+    {
+
+        Managers.GameManager.ResetAll();
+
+        Managers.SceneManager.LoadScene(Scene.LobbyScene);
+    }
+
+    
+
+    public void ResetAll()
+    {
+        Managers.GameManager.kumiho.OnLiverEnergyChanged -= SetLiverEnergyFill;
+        Managers.GameManager.OnClickModeChanged -= VisibleIndicator;
+        Managers.GameManager.OnUrsaChagned -= UpdateUrsaCount;
+        Managers.GameManager.kumiho.OnLiverEnergyChanged -= UpdateLiverEnergy;
+    }
 }

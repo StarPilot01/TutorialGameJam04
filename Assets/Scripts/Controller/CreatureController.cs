@@ -17,6 +17,7 @@ public class CreatureController : BaseController
     }
 
 
+    protected bool _bStopAllAction = false;
     protected Vector2 _prevCellPos;
 
     protected Rigidbody2D _rigidBody;
@@ -30,7 +31,7 @@ public class CreatureController : BaseController
     protected float _adjustmentY = -0.375f;
 
     protected float _animMoveSpeed;
-    protected float MoveSpeed
+    public float MoveSpeed
     {
         get
         {
@@ -190,7 +191,13 @@ public class CreatureController : BaseController
 
     protected virtual void Move()
     {
-        if(PathFindingState == EPathfindingState.Moving)
+        if(_bStopAllAction)
+        {
+            return;
+        }
+
+
+        if (PathFindingState == EPathfindingState.Moving)
         {
 
 
@@ -234,7 +241,7 @@ public class CreatureController : BaseController
 
     protected virtual void ArrivedAtDestination()
     {
-        Debug.Log("Arrived");
+        
 
     }
 
@@ -245,7 +252,7 @@ public class CreatureController : BaseController
         Vector2 wayPointPos = GameMap.CellToWorld(_wayPointCellPos);
         Vector2 diff = myPos - wayPointPos;
 
-        const float EPSILON = 0.035f;
+        const float EPSILON = 0.055f;
 
         if (Mathf.Abs(diff.magnitude) <= EPSILON)
         {
@@ -266,7 +273,7 @@ public class CreatureController : BaseController
 
     public void MoveToDest(Vector2 pos)
     {
-        Debug.Log("Go");
+        
         _destinationCellPos = pos;
 
         PathFindingState = EPathfindingState.FindWayPoint;
@@ -282,7 +289,7 @@ public class CreatureController : BaseController
 
     protected virtual IEnumerator CoWait(float time)
     {
-        Debug.Log("Wait");
+        
         PathFindingState = EPathfindingState.Wait;
 
         yield return new WaitForSeconds(time);

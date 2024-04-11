@@ -14,16 +14,16 @@ public class GameMap : MonoBehaviour
     //static Vector2 _cellStartLeftTopPos = new Vector2(0, 0);
     
     //0~21 , 0~6 까지 맵 범위임
-    static Vector2 _cellCount = new Vector2(22,7);
+    static Vector2 _cellCount = new Vector2(22,8);
     static float _cellSize = 0.75f;
 
     //0부터 시작
-    static BaseController[,] _map;
+    static bool[,] _placedItemMaps;
 
     // Start is called before the first frame update
     void Start()
     {
-        _map = new BaseController[(int)_cellCount.y, (int)_cellCount.x];
+        _placedItemMaps = new bool[(int)_cellCount.y, (int)_cellCount.x];
 
 
         //Vector2 pos = GameMap.GetEmptyCellRandomly();
@@ -63,19 +63,23 @@ public class GameMap : MonoBehaviour
 
         return true;
     }
-    public static bool IsWorldMapRange(Vector2 pos) //World 위치 기반
+    public static bool IsInsideMapArea(Vector2 pos) //World 위치 기반
     {
-        if (pos.x > _cellCount.x * _cellSize)
-            return false;
+        Vector2 minPos = CellToWorld(0, 0);
+        Vector2 maxPos = CellToWorld((int)_cellCount.x - 1, (int)_cellCount.y - 1);
 
-        if (pos.x < 0)
-            return false;
 
-        if (pos.y > 0)
+        if (pos.x < minPos.x || pos.x > maxPos.x)
+        {
             return false;
+        }
+        
+        if(pos.y > minPos.y || pos.y < maxPos.y)
+        {
+            return false;
+        }
 
-        if (pos.y < -_cellCount.y * _cellSize)
-            return false;
+       
 
         return true;
     }
@@ -88,7 +92,7 @@ public class GameMap : MonoBehaviour
             int x = UnityEngine.Random.Range(0, (int)_cellCount.x);
             int y = UnityEngine.Random.Range(0, (int)_cellCount.y);
 
-            if (_map[y, x] == null)
+            if (_placedItemMaps[y, x] == false)
             {
                 return new Vector2(x, y);
             }
@@ -141,5 +145,33 @@ public class GameMap : MonoBehaviour
     public static Vector2 CellToWorld(Vector2 pos)
     {
         return CellToWorld((int)pos.x, (int)pos.y);
+    }
+
+    public static void PlaceItemToMap_World(Vector2 pos)
+    {
+        Vector2 cell = WorldToCell(pos.x, pos.y);
+
+        _placedItemMaps[(int)cell.y, (int)cell.x] = true;
+
+    }
+    
+    public static void PlaceItemToMap_Cell(Vector2 pos)
+    {
+        _placedItemMaps[(int)pos.y, (int)pos.x] = true;
+
+    }
+
+    public static void EraseItemFromMap_World(Vector2 pos)
+    {
+
+        Vector2 cell = WorldToCell(pos.x, pos.y);
+
+        _placedItemMaps[(int)cell.y, (int)cell.x] = false;
+
+    }
+    public static void EraseItemFromMap_Cell(Vector2 pos)
+    {
+        _placedItemMaps[(int)pos.y, (int)pos.x] = false;
+
     }
 }

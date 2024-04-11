@@ -17,9 +17,15 @@ public class LobbyScene : BaseScene
         base.Init();
         SceneType = Define.Scene.LobbyScene;
 
+        Screen.SetResolution(1920, 1080, false);
 
 
        
+    }
+
+    private void Start()
+    {
+        Managers.SoundManager.Play(Define.ESoundType.BGM, "Lobby");
     }
 
     public override void Clear()

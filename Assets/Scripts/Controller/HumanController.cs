@@ -20,24 +20,24 @@ public class HumanController : CreatureController
 
     Dictionary<EHumanLiverState, int> _stateRanges = new Dictionary<EHumanLiverState, int>()
     {
-        { EHumanLiverState.Good , 20},
-        { EHumanLiverState.Common , 50},
-        { EHumanLiverState.Bad , 70}
+        { EHumanLiverState.Good , 30},
+        { EHumanLiverState.Common , 45},
+        { EHumanLiverState.Bad , 65}
     };
     
     Dictionary<EHumanLiverState, int> _rewardLiverEnergyDic = new Dictionary<EHumanLiverState, int>()
     {
-        { EHumanLiverState.Good , 5},
-        { EHumanLiverState.Common , 1},
+        { EHumanLiverState.Good , 3},
+        { EHumanLiverState.Common , -5},
         { EHumanLiverState.Bad , -10}
     };
 
 
     
-    float _liverMalfunctionIncreasingCycleSec = 2;
-    int _liverMalfunctionIncrement = 0;
+    float _liverMalfunctionIncreasingCycleSec = 1;
+    int _liverMalfunctionIncrement = 15;
 
-    int _deadThreshold = 5;
+    int _deadThreshold = 80;
 
     int _liverMalfunctionValue = 0;
 
@@ -127,11 +127,17 @@ public class HumanController : CreatureController
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
+        if(_bStopAllAction)
+        {
+            return;
+        }
+
 
         IEatable eatable = collision.GetComponent<IEatable>();
 
-        if (eatable != null)
+        if (eatable != null && (!_bAbsorbed && !_bDead))
         {
+
             eatable.OnEat(this);
 
             
@@ -229,7 +235,7 @@ public class HumanController : CreatureController
 
     void DeadFromLiverMalfunction()
     {
-
+        Managers.SoundManager.Play(ESoundType.SFX, "Dead");
         Managers.AICommander.NotifyDead(this);
 
         _bDead = true;
@@ -350,7 +356,7 @@ public class HumanController : CreatureController
 
     protected override IEnumerator CoWait(float time)
     {
-        Debug.Log("Wait");
+        //Debug.Log("Wait");
         PathFindingState = EPathfindingState.Wait;
 
         yield return new WaitForSeconds(time);
@@ -363,7 +369,23 @@ public class HumanController : CreatureController
     {
         base.ArrivedAtDestination();
 
-        Managers.AICommander.RequestCommand(this);
+        if(_bStopAllAction)
+        {
+            Managers.AICommander.RequestCommand(this);
+
+        }
+    }
+
+    public void StopAllAction()
+    {
+        _bStopAllAction = true;
+        _animMoveSpeed = 0;
+        MoveDir = EMoveDir.None;
+        _moveDirVec = Vector2.zero;
+        _rigidBody.velocity = Vector2.zero;
+        PathFindingState = EPathfindingState.Wait;
+
+        //StopAllCoroutines();
     }
 }
  
