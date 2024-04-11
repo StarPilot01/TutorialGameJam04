@@ -19,6 +19,14 @@ public class GameScene_UI : MonoBehaviour
     TextMeshProUGUI _possessionCountText;
     [SerializeField]
     TextMeshProUGUI _liverEnergyText;
+
+    [SerializeField]
+    GameObject _gameInfoPopup;
+    [SerializeField]
+    GameObject _gameOverPopup;
+
+    [HideInInspector]
+    public bool ShowingGameInfoPopup;
     // Start is called before the first frame update
 
     private void Awake()
@@ -32,12 +40,26 @@ public class GameScene_UI : MonoBehaviour
         Managers.GameManager.OnClickModeChanged += VisibleIndicator;
         Managers.GameManager.OnUrsaChagned += UpdateUrsaCount;
         Managers.GameManager.kumiho.OnLiverEnergyChanged += UpdateLiverEnergy;
+
+
+        if(Managers.GameManager.FirstPlay)
+        {
+            _gameInfoPopup.SetActive(true);
+            Managers.GameManager.FirstPlay = false;
+            ShowingGameInfoPopup = true;
+
+        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        SetElapsedTime(Managers.GameManager.ElapsedTime);
+        if(!ShowingGameInfoPopup && !Managers.GameManager.bGameOver)
+        {
+           SetElapsedTime(Managers.GameManager.ElapsedTime);
+
+        }
     }
 
 
@@ -86,6 +108,12 @@ public class GameScene_UI : MonoBehaviour
         Managers.SceneManager.LoadScene(Scene.LobbyScene);
     }
 
+    
+    public void ShowGameOverPopup()
+    {
+        _gameOverPopup.SetActive(true);
+
+    }
     
 
     public void ResetAll()

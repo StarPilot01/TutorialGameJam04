@@ -19,5 +19,10 @@ public class UI_GameInfo_Popup : MonoBehaviour
     public void OnClosed()
     {
         gameObject.SetActive(false);
+
+        GameScene gameScene = (GameScene)Managers.SceneManager.CurrentScene;
+
+        gameScene.UI.ShowingGameInfoPopup = false;
+        gameScene.StartGame();
     }
 }

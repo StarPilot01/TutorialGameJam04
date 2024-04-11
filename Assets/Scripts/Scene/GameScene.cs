@@ -21,6 +21,8 @@ public class GameScene : BaseScene
     [SerializeField]
     float _humanSpawnCycle;
 
+    bool _bStart = false;
+
     private void Awake()
     {
         Init();
@@ -31,12 +33,17 @@ public class GameScene : BaseScene
         Managers.SoundManager.Play(ESoundType.BGM, "Game");
 
         Managers.GameManager.OnGameOver += StopSpawn;
+        Managers.GameManager.OnGameOver += UI.ShowGameOverPopup;
 
-        _sojuSpawner.SetSpawnCycle(_sojuSpawnCycle);
-        _sojuSpawner.StartSpawn();
 
-        _humanSpawner.SetSpawnCycle(_humanSpawnCycle);
-        _humanSpawner.StartSpawn();
+
+        if(!UI.ShowingGameInfoPopup)
+        {
+            StartGame();
+            
+        }
+
+
 
     }
     protected override void Init()
@@ -59,6 +66,7 @@ public class GameScene : BaseScene
     // Update is called once per frame
     void Update()
     {
+
         if(Input.GetKeyDown(KeyCode.Mouse0))
         {
             Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -77,11 +85,28 @@ public class GameScene : BaseScene
         _humanSpawner.Stop();
     }
 
+    public void StartGame()
+    {
+
+        Kumiho.StartGame();
+
+
+        _sojuSpawner.SetSpawnCycle(_sojuSpawnCycle);
+        _sojuSpawner.StartSpawn();
+
+        _humanSpawner.SetSpawnCycle(_humanSpawnCycle);
+        _humanSpawner.StartSpawn();
+    }
+
     public void ResetAll()
     {
         Managers.GameManager.OnGameOver -= StopSpawn;
+        Managers.GameManager.OnGameOver -= UI.ShowGameOverPopup;
+
         StopSpawn();
         UI.ResetAll();
 
     }
+
+    
 }

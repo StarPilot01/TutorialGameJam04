@@ -54,7 +54,6 @@ public class Kumiho : MonoBehaviour
                 _liverEnergy = _maxLiverEnergy;
 
 
-            OnLiverEnergyChanged.Invoke(_liverEnergy);
 
 
             //PlayClickedAnim(value);
@@ -65,6 +64,9 @@ public class Kumiho : MonoBehaviour
                 _bDead = true;
                 OnDead?.Invoke();
             }
+
+            OnLiverEnergyChanged.Invoke(_liverEnergy);
+
 
         }
     }
@@ -81,9 +83,13 @@ public class Kumiho : MonoBehaviour
     {
         LiverEnergy = 40;
 
-        StartCoroutine(CoDecreaseLiverEnergyPredically(1.5f));
 
-        OnDead += Dead;
+        //LiverEnergy = 40;
+        //
+        //
+        //StartCoroutine(CoDecreaseLiverEnergyPredically(1.5f));
+        //
+        //OnDead += Dead;
     }
 
     // Update is called once per frame
@@ -194,7 +200,15 @@ public class Kumiho : MonoBehaviour
         _animator.Play(playAnim);
     }
 
+    public void StartGame()
+    {
+        LiverEnergy = 40;
 
+
+        StartCoroutine(CoDecreaseLiverEnergyPredically(1.5f));
+
+        OnDead += Dead;
+    }
     public void ResetAll()
     {
         LiverEnergy = 40;

@@ -67,6 +67,9 @@ public class GameManager
     int _ursaCount = 0;
     int _pickedupSojuCount = 0;
 
+
+    public bool FirstPlay { get; set; } = true;
+
     protected int UrsaCount
     {
         get { return _ursaCount; }
@@ -107,9 +110,14 @@ public class GameManager
         bGameOver = true;
         Managers.SoundManager.Stop(ESoundType.BGM);
         Managers.SoundManager.Play(ESoundType.SFX, "GameOver");
-        Managers.AICommander.StopAllHuman();
+
+        Managers.AICommander.ResetAll();
+
+
+        //ResetAll();
+        //Managers.AICommander.StopAllHuman();
     }
-    
+
     public void OnHumanClicked(HumanController human)
     {
         switch(_clickMode)
