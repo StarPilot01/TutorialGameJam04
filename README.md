@@ -1,1 +1,1 @@
-<iframe width="923" height="519" src="https://www.youtube.com/embed/SluOgEk52XY" title="튜토리얼 4월 게임잼 - 2팀" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+https://www.youtube.com/watch?v=SluOgEk52XY
